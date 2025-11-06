@@ -41,9 +41,15 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 const instituicaoRoutes = require('./src/routes/instituicao');
 const cursoRoutes = require('./src/routes/curso');
 const professorRoutes = require('./src/routes/professor');
+const disciplinaRoutes = require('./src/routes/disciplina');
+const laboratorioRoutes = require('./src/routes/laboratorio');
+const blocoRoutes = require('./src/routes/bloco');
 app.use('/api/v1/instituicoes', instituicaoRoutes);
 app.use('/api/v1/cursos', cursoRoutes);
 app.use('/api/v1/professores', professorRoutes);
+app.use('/api/v1/disciplinas', disciplinaRoutes);
+app.use('/api/v1/laboratorios', laboratorioRoutes);
+app.use('/api/v1/blocos', blocoRoutes);
 
 // MongoDB connection
 const mongoUrl = `mongodb://${process.env.MONGO_INITDB_ROOT_USERNAME}:${process.env.MONGO_INITDB_ROOT_PASSWORD}@${process.env.MONGO_INITDB_HOST}:${process.env.MONGO_INITDB_PORT}/${process.env.MONGO_INITDB_DATABASE}?authSource=admin`;
