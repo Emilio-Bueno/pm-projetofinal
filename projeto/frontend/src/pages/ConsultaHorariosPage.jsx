@@ -129,22 +129,22 @@ const ConsultaHorariosPage = () => {
   };
 
   const todosHorarios = [
-    { inicio: '7:40', fim: '8:30' },
-    { inicio: '8:30', fim: '9:20' },
-    { inicio: '9:30', fim: '10:20' },
-    { inicio: '10:20', fim: '11:10' },
-    { inicio: '11:20', fim: '12:10' },
-    { inicio: '12:10', fim: '13:00' },
-    { inicio: '13:20', fim: '14:10' },
-    { inicio: '14:10', fim: '15:00' },
-    { inicio: '15:10', fim: '16:00' },
-    { inicio: '16:00', fim: '16:50' },
-    { inicio: '17:00', fim: '17:50' },
-    { inicio: '17:50', fim: '18:40' },
-    { inicio: '19:00', fim: '19:50' },
-    { inicio: '19:50', fim: '20:40' },
-    { inicio: '20:50', fim: '21:40' },
-    { inicio: '21:40', fim: '22:30' }
+    { inicio: '7:40', fim: '8:30', turno: 'matutino' },
+    { inicio: '8:30', fim: '9:20', turno: 'matutino' },
+    { inicio: '9:30', fim: '10:20', turno: 'matutino' },
+    { inicio: '10:20', fim: '11:10', turno: 'matutino' },
+    { inicio: '11:20', fim: '12:10', turno: 'matutino' },
+    { inicio: '12:10', fim: '13:00', turno: 'matutino' },
+    { inicio: '13:20', fim: '14:10', turno: 'vespertino' },
+    { inicio: '14:10', fim: '15:00', turno: 'vespertino' },
+    { inicio: '15:10', fim: '16:00', turno: 'vespertino' },
+    { inicio: '16:00', fim: '16:50', turno: 'vespertino' },
+    { inicio: '17:00', fim: '17:50', turno: 'vespertino' },
+    { inicio: '17:50', fim: '18:40', turno: 'vespertino' },
+    { inicio: '19:00', fim: '19:50', turno: 'noturno' },
+    { inicio: '19:50', fim: '20:40', turno: 'noturno' },
+    { inicio: '20:50', fim: '21:40', turno: 'noturno' },
+    { inicio: '21:40', fim: '22:30', turno: 'noturno' }
   ];
 
   const getAulaPorDiaEHorario = (dia, inicio, fim) => {
@@ -190,7 +190,7 @@ const ConsultaHorariosPage = () => {
           <tbody>
             {todosHorarios.map((horario, index) => (
               <tr key={index}>
-                <td className="horario-coluna">
+                <td className={`horario-coluna ${horario.turno}`}>
                   {horario.inicio} - {horario.fim}
                 </td>
                 {diasSemana.map(dia => {
@@ -198,7 +198,7 @@ const ConsultaHorariosPage = () => {
                   
                   if (aula) {
                     return (
-                      <td key={`${index}-${dia}`} className={`celula-aula ${getCorPorDisciplina(aula.disciplinaId)}`}>
+                      <td key={`${index}-${dia}`} className={`celula-aula ${horario.turno}`}>
                         <div className="aula-disciplina">{getDisciplinaNome(aula.disciplinaId)}</div>
                         <div className="aula-professor">Professor: {getProfessorNome(aula.professorId)}</div>
                         <div className="aula-laboratorio">Laboratório: {getLaboratorioNome(aula.laboratorioId)}</div>

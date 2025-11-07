@@ -219,6 +219,7 @@ const FormularioAulaPage = () => {
         autoHeight
         disableSelectionOnClick
         loading={optionsLoading}
+        hideFooter
         sx={{ mb: 3 }}
       />
 

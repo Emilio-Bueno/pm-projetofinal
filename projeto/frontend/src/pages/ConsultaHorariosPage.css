@@ -9,26 +9,41 @@
 .horario-grid th,
 .horario-grid td {
   border: 1px solid #ccc;
-  padding: 8px;
+  padding: 6px;
   text-align: center;
   vertical-align: middle;
-  min-height: 80px;
-  height: 80px;
+  min-height: 50px;
+  height: 50px;
 }
 
 .horario-grid th {
-  background-color: #ECECEC;
+  background-color: #000000;
   font-weight: bold;
-  color: #333;
+  color: #ffffff;
 }
 
 .horario-grid .horario-coluna {
-  background-color: #F0F0F0;
+  background-color: #000000;
   font-weight: bold;
-  color: #333;
+  color: #ffffff;
   width: 120px;
   text-align: center;
   vertical-align: middle;
+}
+
+.horario-grid .horario-coluna.matutino {
+  background-color: #E8F5E8;
+  color: #2E7D32;
+}
+
+.horario-grid .horario-coluna.vespertino {
+  background-color: #FFF3E0;
+  color: #F57C00;
+}
+
+.horario-grid .horario-coluna.noturno {
+  background-color: #E3F2FD;
+  color: #1976D2;
 }
 
 .horario-grid .celula-vazia {
@@ -36,7 +51,6 @@
 }
 
 .horario-grid .celula-aula {
-  background-color: #E3F2FD;
   text-align: center;
   padding: 6px;
   position: relative;
@@ -44,14 +58,20 @@
   display: table-cell;
 }
 
-.horario-grid .celula-aula.cor-1 { background-color: #FFCDD2; }
-.horario-grid .celula-aula.cor-2 { background-color: #F8BBD9; }
-.horario-grid .celula-aula.cor-3 { background-color: #E1BEE7; }
-.horario-grid .celula-aula.cor-4 { background-color: #D1C4E9; }
-.horario-grid .celula-aula.cor-5 { background-color: #C5CAE9; }
-.horario-grid .celula-aula.cor-6 { background-color: #BBDEFB; }
-.horario-grid .celula-aula.cor-7 { background-color: #B3E5FC; }
-.horario-grid .celula-aula.cor-8 { background-color: #B2EBF2; }
+.horario-grid .celula-aula.matutino {
+  background-color: #E8F5E8;
+  color: #2E7D32;
+}
+
+.horario-grid .celula-aula.vespertino {
+  background-color: #FFF3E0;
+  color: #F57C00;
+}
+
+.horario-grid .celula-aula.noturno {
+  background-color: #E3F2FD;
+  color: #1976D2;
+}
 
 .aula-disciplina {
   font-weight: bold;

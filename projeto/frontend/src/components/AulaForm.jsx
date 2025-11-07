@@ -36,14 +36,16 @@ const AulaForm = ({ data, onSubmit, onCancel, resetForm, onResetComplete }) => {
 
   useEffect(() => {
     if (data) {
-      // Tratar IDs que podem vir como objetos
+      // Tratar IDs que podem vir como objetos e converter datas
       const processedData = {
         ...data,
         cursoId: typeof data.cursoId === 'object' ? data.cursoId._id : data.cursoId,
         disciplinaId: typeof data.disciplinaId === 'object' ? data.disciplinaId._id : data.disciplinaId,
         professorId: typeof data.professorId === 'object' ? data.professorId._id : data.professorId,
         laboratorioId: typeof data.laboratorioId === 'object' ? data.laboratorioId._id : data.laboratorioId,
-        blocos: typeof data.blocos === 'object' ? data.blocos._id : data.blocos
+        blocos: typeof data.blocos === 'object' ? data.blocos._id : data.blocos,
+        dataInicio: data.dataInicio ? new Date(data.dataInicio).toISOString().split('T')[0] : '',
+        dataFim: data.dataFim ? new Date(data.dataFim).toISOString().split('T')[0] : ''
       };
       setFormData(processedData);
     }
