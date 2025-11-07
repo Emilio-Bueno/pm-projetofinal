@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Box, FormControl, InputLabel, Select, MenuItem, Grid, IconButton } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
-import { Delete } from '@mui/icons-material';
+import { Typography, Box, FormControl, InputLabel, Select, MenuItem, Grid } from '@mui/material';
 import { aulaService } from '../services/aulaService.jsx';
 import { laboratorioService } from '../services/laboratorioService.jsx';
 import { professorService } from '../services/professorService.jsx';
 import { cursoService } from '../services/cursoService.jsx';
+import { blocoService } from '../services/blocoService.jsx';
 import { disciplinaService } from '../services/disciplinaService.jsx';
+import './ConsultaHorariosPage.css';
 
 const ConsultaHorariosPage = () => {
   const [aulas, setAulas] = useState([]);
@@ -23,8 +23,11 @@ const ConsultaHorariosPage = () => {
     laboratorios: [],
     professores: [],
     cursos: [],
+    blocos: [],
     disciplinas: []
   });
+
+  const diasSemana = ['SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA'];
 
   useEffect(() => {
     loadData();
@@ -37,11 +40,12 @@ const ConsultaHorariosPage = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [aulasRes, laboratoriosRes, professoresRes, cursosRes, disciplinasRes] = await Promise.all([
+      const [aulasRes, laboratoriosRes, professoresRes, cursosRes, blocosRes, disciplinasRes] = await Promise.all([
         aulaService.getAll(),
         laboratorioService.getAll(),
         professorService.getAll(),
         cursoService.getAll(),
+        blocoService.getAll(),
         disciplinaService.getAll()
       ]);
 
@@ -50,6 +54,7 @@ const ConsultaHorariosPage = () => {
         laboratorios: laboratoriosRes.data,
         professores: professoresRes.data,
         cursos: cursosRes.data,
+        blocos: blocosRes.data,
         disciplinas: disciplinasRes.data
       });
     } catch (error) {
@@ -92,96 +97,139 @@ const ConsultaHorariosPage = () => {
     });
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Tem certeza que deseja excluir esta aula?')) {
-      try {
-        await aulaService.remove(id);
-        loadData();
-      } catch (error) {
-        console.error('Erro ao excluir aula:', error);
-      }
-    }
+  const getLaboratorioNome = (id) => {
+    const realId = typeof id === 'object' ? id._id : id;
+    const lab = options.laboratorios.find(l => l._id === realId);
+    return lab ? lab.nome : 'N/A';
   };
 
-  const getLaboratorioNome = (laboratorio) => {
-    if (typeof laboratorio === 'object' && laboratorio?.nome) {
-      return laboratorio.nome;
-    }
-    const found = options.laboratorios.find(l => l._id === laboratorio);
-    return found ? found.nome : laboratorio;
+  const getProfessorNome = (id) => {
+    const realId = typeof id === 'object' ? id._id : id;
+    const prof = options.professores.find(p => p._id === realId);
+    return prof ? prof.nome : 'N/A';
   };
 
-  const getProfessorNome = (professor) => {
-    if (typeof professor === 'object' && professor?.nome) {
-      return professor.nome;
-    }
-    const found = options.professores.find(p => p._id === professor);
-    return found ? found.nome : professor;
+  const getCursoNome = (id) => {
+    const realId = typeof id === 'object' ? id._id : id;
+    const curso = options.cursos.find(c => c._id === realId);
+    return curso ? curso.nome : 'N/A';
   };
 
-  const getCursoNome = (curso) => {
-    if (typeof curso === 'object' && curso?.nome) {
-      return curso.nome;
-    }
-    const found = options.cursos.find(c => c._id === curso);
-    return found ? found.nome : curso;
+  const getDisciplinaNome = (id) => {
+    const realId = typeof id === 'object' ? id._id : id;
+    const disciplina = options.disciplinas.find(d => d._id === realId);
+    return disciplina ? disciplina.nome : 'N/A';
   };
 
-  const getDisciplinaNome = (disciplina) => {
-    if (typeof disciplina === 'object' && disciplina?.nome) {
-      return disciplina.nome;
-    }
-    const found = options.disciplinas.find(d => d._id === disciplina);
-    return found ? found.nome : disciplina;
+  const getBlocoHorario = (id) => {
+    const bloco = options.blocos.find(b => b._id === id);
+    return bloco ? `${bloco.inicio} - ${bloco.fim}` : '';
   };
 
-  const columns = [
-    { field: 'semestre', headerName: 'Semestre', width: 120, sortable: false },
-    { 
-      field: 'disciplinaId', 
-      headerName: 'Disciplina', 
-      width: 150,
-      sortable: false,
-      renderCell: (params) => getDisciplinaNome(params.row.disciplinaId)
-    },
-    { 
-      field: 'professorId', 
-      headerName: 'Professor', 
-      width: 150,
-      sortable: false,
-      renderCell: (params) => getProfessorNome(params.row.professorId)
-    },
-    { 
-      field: 'laboratorioId', 
-      headerName: 'Laboratório', 
-      width: 150,
-      sortable: false,
-      renderCell: (params) => getLaboratorioNome(params.row.laboratorioId)
-    },
-    { 
-      field: 'cursoId', 
-      headerName: 'Curso', 
-      width: 150,
-      sortable: false,
-      renderCell: (params) => getCursoNome(params.row.cursoId)
-    },
-    { field: 'diaSemana', headerName: 'Dia', width: 120, sortable: false },
-    { field: 'dataInicio', headerName: 'Início', width: 120, sortable: false },
-    { field: 'dataFim', headerName: 'Fim', width: 120, sortable: false },
-    {
-      field: 'actions',
-      headerName: 'Ações',
-      width: 120,
-      sortable: false,
-      renderCell: (params) => (
-        <Box>
-          <IconButton onClick={() => handleDelete(params.row._id)} size="small">
-            <Delete />
-          </IconButton>
-        </Box>
-      ),
-    }
+  const getCorPorDisciplina = (disciplinaId) => {
+    if (!disciplinaId) return '';
+    const id = typeof disciplinaId === 'object' ? disciplinaId._id : disciplinaId;
+    if (!id || typeof id !== 'string') return '';
+    const index = (id.charCodeAt(id.length - 1) % 8) + 1;
+    return `cor-${index}`;
+  };
+
+  const getAulaPorDiaEBloco = (dia, blocoId) => {
+    return filteredAulas.find(aula => 
+      aula.diaSemana?.toUpperCase() === dia && aula.blocos === blocoId
+    );
+  };
+
+  const todosHorarios = [
+    { inicio: '7:40', fim: '8:30' },
+    { inicio: '8:30', fim: '9:20' },
+    { inicio: '9:30', fim: '10:20' },
+    { inicio: '10:20', fim: '11:10' },
+    { inicio: '11:20', fim: '12:10' },
+    { inicio: '12:10', fim: '13:00' },
+    { inicio: '13:20', fim: '14:10' },
+    { inicio: '14:10', fim: '15:00' },
+    { inicio: '15:10', fim: '16:00' },
+    { inicio: '16:00', fim: '16:50' },
+    { inicio: '17:00', fim: '17:50' },
+    { inicio: '17:50', fim: '18:40' },
+    { inicio: '19:00', fim: '19:50' },
+    { inicio: '19:50', fim: '20:40' },
+    { inicio: '20:50', fim: '21:40' },
+    { inicio: '21:40', fim: '22:30' }
   ];
+
+  const getAulaPorDiaEHorario = (dia, inicio, fim) => {
+    return aulas.find(aula => {
+      const diaNormalizado = dia.toLowerCase();
+      const aulaDia = aula.diaSemana?.toLowerCase();
+      
+      if (aulaDia !== diaNormalizado) return false;
+      
+      // Verificar se a aula é do laboratório selecionado
+      if (filters.laboratorioId) {
+        const aulaLabId = typeof aula.laboratorioId === 'object' ? aula.laboratorioId._id : aula.laboratorioId;
+        if (aulaLabId !== filters.laboratorioId) return false;
+      }
+      
+      const bloco = options.blocos.find(b => b.inicio === inicio && b.fim === fim);
+      if (!bloco) return false;
+      
+      const aulaBloco = typeof aula.blocos === 'object' ? aula.blocos._id : aula.blocos;
+      return aulaBloco === bloco._id;
+    });
+  };
+
+  const renderGradeHorarios = () => {
+    const laboratorioSelecionado = options.laboratorios.find(lab => lab._id === filters.laboratorioId);
+    
+    return (
+      <div className="horario-container">
+        {laboratorioSelecionado && (
+          <Typography variant="h5" sx={{ mb: 2, textAlign: 'center', fontWeight: 'bold' }}>
+            {laboratorioSelecionado.nome} - Capacidade: {laboratorioSelecionado.capacidade} lugares
+          </Typography>
+        )}
+        <table className="horario-grid" style={{ width: '100%', minWidth: '1200px' }}>
+          <thead>
+            <tr>
+              <th>Horário</th>
+              {diasSemana.map(dia => (
+                <th key={dia}>{dia}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {todosHorarios.map((horario, index) => (
+              <tr key={index}>
+                <td className="horario-coluna">
+                  {horario.inicio} - {horario.fim}
+                </td>
+                {diasSemana.map(dia => {
+                  const aula = getAulaPorDiaEHorario(dia, horario.inicio, horario.fim);
+                  
+                  if (aula) {
+                    return (
+                      <td key={`${index}-${dia}`} className={`celula-aula ${getCorPorDisciplina(aula.disciplinaId)}`}>
+                        <div className="aula-disciplina">{getDisciplinaNome(aula.disciplinaId)}</div>
+                        <div className="aula-professor">Professor: {getProfessorNome(aula.professorId)}</div>
+                        <div className="aula-laboratorio">Laboratório: {getLaboratorioNome(aula.laboratorioId)}</div>
+                        <div className="aula-curso">Curso: {getCursoNome(aula.cursoId)}</div>
+                      </td>
+                    );
+                  } else {
+                    return (
+                      <td key={`${index}-${dia}`} className="celula-vazia"></td>
+                    );
+                  }
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
 
   return (
     <Box>
@@ -190,16 +238,15 @@ const ConsultaHorariosPage = () => {
       </Typography>
 
       <Box sx={{ mb: 3 }}>
-        <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} sm={3}>
-            <FormControl fullWidth>
+        <Grid container spacing={3} alignItems="center">
+          <Grid item xs={12} md={4}>
+            <FormControl fullWidth sx={{ minWidth: 200 }}>
               <InputLabel>Laboratório</InputLabel>
               <Select
                 name="laboratorioId"
                 value={filters.laboratorioId}
                 onChange={handleFilterChange}
                 label="Laboratório"
-                sx={{ minWidth: 200 }}
               >
                 <MenuItem value="">Todos</MenuItem>
                 {options.laboratorios.map((lab) => (
@@ -211,15 +258,14 @@ const ConsultaHorariosPage = () => {
             </FormControl>
           </Grid>
 
-          <Grid item xs={12} sm={3}>
-            <FormControl fullWidth>
+          <Grid item xs={12} md={4}>
+            <FormControl fullWidth sx={{ minWidth: 200 }}>
               <InputLabel>Professor</InputLabel>
               <Select
                 name="professorId"
                 value={filters.professorId}
                 onChange={handleFilterChange}
                 label="Professor"
-                sx={{ minWidth: 200 }}
               >
                 <MenuItem value="">Todos</MenuItem>
                 {options.professores.map((prof) => (
@@ -231,15 +277,14 @@ const ConsultaHorariosPage = () => {
             </FormControl>
           </Grid>
 
-          <Grid item xs={12} sm={3}>
-            <FormControl fullWidth>
+          <Grid item xs={12} md={4}>
+            <FormControl fullWidth sx={{ minWidth: 200 }}>
               <InputLabel>Curso</InputLabel>
               <Select
                 name="cursoId"
                 value={filters.cursoId}
                 onChange={handleFilterChange}
                 label="Curso"
-                sx={{ minWidth: 200 }}
               >
                 <MenuItem value="">Todos</MenuItem>
                 {options.cursos.map((curso) => (
@@ -251,7 +296,7 @@ const ConsultaHorariosPage = () => {
             </FormControl>
           </Grid>
 
-          <Grid item xs={12} sm={3}>
+          <Grid item xs={12}>
             <Box sx={{ display: 'flex', gap: 1 }}>
               <Typography 
                 variant="body2" 
@@ -265,20 +310,17 @@ const ConsultaHorariosPage = () => {
         </Grid>
       </Box>
 
-      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-        <DataGrid
-          rows={filteredAulas}
-          columns={columns}
-          getRowId={(row) => row._id}
-          loading={loading}
-          autoHeight
-          disableSelectionOnClick
-          hideFooter
-          disableColumnMenu
-          sortingOrder={[]}
-          sx={{ maxWidth: 'fit-content' }}
-        />
-      </Box>
+      {loading ? (
+        <Typography>Carregando...</Typography>
+      ) : filters.laboratorioId ? (
+        renderGradeHorarios()
+      ) : (
+        <Box sx={{ textAlign: 'center', mt: 4, p: 3, bgcolor: 'grey.100', borderRadius: 2 }}>
+          <Typography variant="h6" color="text.secondary">
+            Selecione um laboratório para visualizar os horários
+          </Typography>
+        </Box>
+      )}
     </Box>
   );
 };

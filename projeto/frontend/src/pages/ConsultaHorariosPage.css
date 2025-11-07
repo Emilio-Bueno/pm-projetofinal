@@ -1,0 +1,92 @@
+.horario-grid {
+  width: 100%;
+  min-width: 1200px;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.horario-grid th,
+.horario-grid td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
+  vertical-align: top;
+  min-height: 80px;
+  height: 80px;
+}
+
+.horario-grid th {
+  background-color: #ECECEC;
+  font-weight: bold;
+  color: #333;
+}
+
+.horario-grid .horario-coluna {
+  background-color: #F0F0F0;
+  font-weight: bold;
+  color: #333;
+  width: 120px;
+  text-align: center;
+}
+
+.horario-grid .celula-vazia {
+  background-color: white;
+}
+
+.horario-grid .celula-aula {
+  background-color: #E3F2FD;
+  text-align: center;
+  padding: 6px;
+  position: relative;
+  vertical-align: middle;
+  display: table-cell;
+}
+
+.horario-grid .celula-aula.cor-1 { background-color: #FFCDD2; }
+.horario-grid .celula-aula.cor-2 { background-color: #F8BBD9; }
+.horario-grid .celula-aula.cor-3 { background-color: #E1BEE7; }
+.horario-grid .celula-aula.cor-4 { background-color: #D1C4E9; }
+.horario-grid .celula-aula.cor-5 { background-color: #C5CAE9; }
+.horario-grid .celula-aula.cor-6 { background-color: #BBDEFB; }
+.horario-grid .celula-aula.cor-7 { background-color: #B3E5FC; }
+.horario-grid .celula-aula.cor-8 { background-color: #B2EBF2; }
+
+.aula-disciplina {
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 11px;
+  line-height: 1.2;
+  margin-bottom: 2px;
+}
+
+.aula-professor,
+.aula-laboratorio,
+.aula-curso {
+  font-size: 10px;
+  line-height: 1.1;
+  margin-bottom: 1px;
+}
+
+.horario-container {
+  overflow-x: auto;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.horario-grid {
+  min-width: 1200px;
+}
+
+@media (max-width: 768px) {
+  .horario-grid {
+    font-size: 9px;
+  }
+  
+  .horario-grid th,
+  .horario-grid td {
+    padding: 4px;
+    min-height: 60px;
+    height: 60px;
+  }
+}
