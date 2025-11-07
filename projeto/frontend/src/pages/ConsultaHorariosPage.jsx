@@ -14,9 +14,7 @@ const ConsultaHorariosPage = () => {
   const [loading, setLoading] = useState(false);
   
   const [filters, setFilters] = useState({
-    laboratorioId: '',
-    professorId: '',
-    cursoId: ''
+    laboratorioId: ''
   });
 
   const [options, setOptions] = useState({
@@ -27,7 +25,7 @@ const ConsultaHorariosPage = () => {
     disciplinas: []
   });
 
-  const diasSemana = ['SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA'];
+  const diasSemana = ['SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA', 'SÁBADO'];
 
   useEffect(() => {
     loadData();
@@ -71,14 +69,6 @@ const ConsultaHorariosPage = () => {
       filtered = filtered.filter(aula => aula.laboratorioId === filters.laboratorioId);
     }
 
-    if (filters.professorId) {
-      filtered = filtered.filter(aula => aula.professorId === filters.professorId);
-    }
-
-    if (filters.cursoId) {
-      filtered = filtered.filter(aula => aula.cursoId === filters.cursoId);
-    }
-
     setFilteredAulas(filtered);
   };
 
@@ -91,9 +81,7 @@ const ConsultaHorariosPage = () => {
 
   const clearFilters = () => {
     setFilters({
-      laboratorioId: '',
-      professorId: '',
-      cursoId: ''
+      laboratorioId: ''
     });
   };
 
@@ -239,7 +227,7 @@ const ConsultaHorariosPage = () => {
 
       <Box sx={{ mb: 3 }}>
         <Grid container spacing={3} alignItems="center">
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={6}>
             <FormControl fullWidth sx={{ minWidth: 200 }}>
               <InputLabel>Laboratório</InputLabel>
               <Select
@@ -248,7 +236,7 @@ const ConsultaHorariosPage = () => {
                 onChange={handleFilterChange}
                 label="Laboratório"
               >
-                <MenuItem value="">Todos</MenuItem>
+                <MenuItem value="">Selecione um laboratório</MenuItem>
                 {options.laboratorios.map((lab) => (
                   <MenuItem key={lab._id} value={lab._id}>
                     {lab.nome}
@@ -258,52 +246,14 @@ const ConsultaHorariosPage = () => {
             </FormControl>
           </Grid>
 
-          <Grid item xs={12} md={4}>
-            <FormControl fullWidth sx={{ minWidth: 200 }}>
-              <InputLabel>Professor</InputLabel>
-              <Select
-                name="professorId"
-                value={filters.professorId}
-                onChange={handleFilterChange}
-                label="Professor"
-              >
-                <MenuItem value="">Todos</MenuItem>
-                {options.professores.map((prof) => (
-                  <MenuItem key={prof._id} value={prof._id}>
-                    {prof.nome}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12} md={4}>
-            <FormControl fullWidth sx={{ minWidth: 200 }}>
-              <InputLabel>Curso</InputLabel>
-              <Select
-                name="cursoId"
-                value={filters.cursoId}
-                onChange={handleFilterChange}
-                label="Curso"
-              >
-                <MenuItem value="">Todos</MenuItem>
-                {options.cursos.map((curso) => (
-                  <MenuItem key={curso._id} value={curso._id}>
-                    {curso.nome}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12}>
+          <Grid item xs={12} md={6}>
             <Box sx={{ display: 'flex', gap: 1 }}>
               <Typography 
                 variant="body2" 
                 sx={{ cursor: 'pointer', color: 'primary.main', textDecoration: 'underline' }}
                 onClick={clearFilters}
               >
-                Limpar Filtros
+                Limpar Seleção
               </Typography>
             </Box>
           </Grid>

@@ -36,7 +36,16 @@ const AulaForm = ({ data, onSubmit, onCancel, resetForm, onResetComplete }) => {
 
   useEffect(() => {
     if (data) {
-      setFormData(data);
+      // Tratar IDs que podem vir como objetos
+      const processedData = {
+        ...data,
+        cursoId: typeof data.cursoId === 'object' ? data.cursoId._id : data.cursoId,
+        disciplinaId: typeof data.disciplinaId === 'object' ? data.disciplinaId._id : data.disciplinaId,
+        professorId: typeof data.professorId === 'object' ? data.professorId._id : data.professorId,
+        laboratorioId: typeof data.laboratorioId === 'object' ? data.laboratorioId._id : data.laboratorioId,
+        blocos: typeof data.blocos === 'object' ? data.blocos._id : data.blocos
+      };
+      setFormData(processedData);
     }
   }, [data]);
 
