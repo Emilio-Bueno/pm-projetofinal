@@ -63,14 +63,15 @@ const LaboratoriosPage = () => {
   };
 
   const columns = [
-    { field: 'nome', headerName: 'Nome', width: 200 },
-    { field: 'capacidade', headerName: 'Capacidade', width: 120 },
-    { field: 'local', headerName: 'Local', width: 200 },
-    { field: 'status', headerName: 'Status', width: 100 },
+    { field: 'nome', headerName: 'Nome', width: 200, sortable: false },
+    { field: 'capacidade', headerName: 'Capacidade', width: 120, sortable: false },
+    { field: 'local', headerName: 'Local', width: 200, sortable: false },
+    { field: 'status', headerName: 'Status', width: 100, sortable: false },
     {
       field: 'actions',
       headerName: 'Ações',
       width: 120,
+      sortable: false,
       renderCell: (params) => (
         <Box>
           <IconButton onClick={() => handleEdit(params.row)} size="small">
@@ -102,6 +103,8 @@ const LaboratoriosPage = () => {
           autoHeight
           disableSelectionOnClick
           hideFooter
+          disableColumnMenu
+          sortingOrder={[]}
           sx={{ maxWidth: 'fit-content' }}
         />
       </Box>

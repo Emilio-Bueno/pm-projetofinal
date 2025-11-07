@@ -7,6 +7,7 @@ const Professor = require('./Professor');
 const Disciplina = require('./Disciplina');
 const Laboratorio = require('./Laboratorio');
 const Bloco = require('./Bloco');
+const Aula = require('./Aula');
 
 module.exports = {
   Instituicao,
@@ -14,5 +15,6 @@ module.exports = {
   Professor,
   Disciplina,
   Laboratorio,
-  Bloco
+  Bloco,
+  Aula
 };

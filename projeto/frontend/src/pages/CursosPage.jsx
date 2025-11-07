@@ -69,7 +69,8 @@ const CursosPage = () => {
     { 
       field: 'instituicaoId', 
       headerName: 'Instituição', 
-      width: 200, 
+      width: 200,
+      sortable: false,
       renderCell: (params) => {
         const instituicao = params.row.instituicaoId;
         if (typeof instituicao === 'object' && instituicao?.nome) {
@@ -78,11 +79,12 @@ const CursosPage = () => {
         return instituicao || '';
       }
     },
-    { field: 'nome', headerName: 'Nome', width: 200 },
+    { field: 'nome', headerName: 'Nome', width: 200, sortable: false },
     { 
       field: 'turnos', 
       headerName: 'Turnos', 
-      width: 150, 
+      width: 150,
+      sortable: false,
       renderCell: (params) => {
         const turnos = params.row.turnos;
         if (Array.isArray(turnos)) {
@@ -91,11 +93,12 @@ const CursosPage = () => {
         return turnos || '';
       }
     },
-    { field: 'status', headerName: 'Status', width: 100 },
+    { field: 'status', headerName: 'Status', width: 100, sortable: false },
     {
       field: 'actions',
       headerName: 'Ações',
       width: 120,
+      sortable: false,
       renderCell: (params) => (
         <Box>
           <IconButton onClick={() => handleEdit(params.row)} size="small">
@@ -127,6 +130,8 @@ const CursosPage = () => {
           autoHeight
           disableSelectionOnClick
           hideFooter
+          disableColumnMenu
+          sortingOrder={[]}
           sx={{ maxWidth: 'fit-content' }}
         />
       </Box>

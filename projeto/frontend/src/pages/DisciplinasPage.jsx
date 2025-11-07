@@ -66,7 +66,8 @@ const DisciplinasPage = () => {
     { 
       field: 'cursoId', 
       headerName: 'Curso', 
-      width: 200, 
+      width: 200,
+      sortable: false,
       renderCell: (params) => {
         const curso = params.row.cursoId;
         if (typeof curso === 'object' && curso?.nome) {
@@ -75,12 +76,13 @@ const DisciplinasPage = () => {
         return curso || '';
       }
     },
-    { field: 'nome', headerName: 'Nome', width: 200 },
-    { field: 'cargaHoraria', headerName: 'Carga Horária', width: 120 },
+    { field: 'nome', headerName: 'Nome', width: 200, sortable: false },
+    { field: 'cargaHoraria', headerName: 'Carga Horária', width: 120, sortable: false },
     { 
       field: 'professorId', 
       headerName: 'Professor', 
-      width: 150, 
+      width: 150,
+      sortable: false,
       renderCell: (params) => {
         const professor = params.row.professorId;
         if (typeof professor === 'object' && professor?.nome) {
@@ -89,11 +91,12 @@ const DisciplinasPage = () => {
         return professor ? 'N/A' : 'Nenhum';
       }
     },
-    { field: 'status', headerName: 'Status', width: 100 },
+    { field: 'status', headerName: 'Status', width: 100, sortable: false },
     {
       field: 'actions',
       headerName: 'Ações',
       width: 120,
+      sortable: false,
       renderCell: (params) => (
         <Box>
           <IconButton onClick={() => handleEdit(params.row)} size="small">
@@ -125,6 +128,8 @@ const DisciplinasPage = () => {
           autoHeight
           disableSelectionOnClick
           hideFooter
+          disableColumnMenu
+          sortingOrder={[]}
           sx={{ maxWidth: 'fit-content' }}
         />
       </Box>

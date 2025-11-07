@@ -63,15 +63,16 @@ const InstituicoesPage = () => {
   };
 
   const columns = [
-    { field: 'nome', headerName: 'Nome', width: 200 },
-    { field: 'sigla', headerName: 'Sigla', width: 100 },
-    { field: 'cnpj', headerName: 'CNPJ', width: 150 },
-    { field: 'endereco', headerName: 'Endereço', width: 200 },
-    { field: 'status', headerName: 'Status', width: 100 },
+    { field: 'nome', headerName: 'Nome', width: 200, sortable: false },
+    { field: 'sigla', headerName: 'Sigla', width: 100, sortable: false },
+    { field: 'cnpj', headerName: 'CNPJ', width: 150, sortable: false },
+    { field: 'endereco', headerName: 'Endereço', width: 200, sortable: false },
+    { field: 'status', headerName: 'Status', width: 100, sortable: false },
     {
       field: 'actions',
       headerName: 'Ações',
       width: 120,
+      sortable: false,
       renderCell: (params) => (
         <Box>
           <IconButton onClick={() => handleEdit(params.row)} size="small">
@@ -103,6 +104,8 @@ const InstituicoesPage = () => {
           autoHeight
           disableSelectionOnClick
           hideFooter
+          disableColumnMenu
+          sortingOrder={[]}
           sx={{ maxWidth: 'fit-content' }}
         />
       </Box>

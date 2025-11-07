@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 /**
  * @typedef {Object} CursoSchema
@@ -30,7 +29,7 @@ const cursoSchema = new mongoose.Schema({
   collection: 'cursos'
 });
 
-cursoSchema.plugin(AutoIncrement, { inc_field: 'id', id: 'curso_seq' });
+
 
 /**
  * Modelo Mongoose para Curso

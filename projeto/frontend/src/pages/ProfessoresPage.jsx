@@ -63,14 +63,15 @@ const ProfessoresPage = () => {
   };
 
   const columns = [
-    { field: 'nome', headerName: 'Nome', width: 200 },
-    { field: 'email', headerName: 'Email', width: 200 },
-    { field: 'telefone', headerName: 'Telefone', width: 150 },
-    { field: 'status', headerName: 'Status', width: 100 },
+    { field: 'nome', headerName: 'Nome', width: 200, sortable: false },
+    { field: 'email', headerName: 'Email', width: 200, sortable: false },
+    { field: 'telefone', headerName: 'Telefone', width: 150, sortable: false },
+    { field: 'status', headerName: 'Status', width: 100, sortable: false },
     {
       field: 'actions',
       headerName: 'Ações',
       width: 120,
+      sortable: false,
       renderCell: (params) => (
         <Box>
           <IconButton onClick={() => handleEdit(params.row)} size="small">
@@ -102,6 +103,8 @@ const ProfessoresPage = () => {
           autoHeight
           disableSelectionOnClick
           hideFooter
+          disableColumnMenu
+          sortingOrder={[]}
           sx={{ maxWidth: 'fit-content' }}
         />
       </Box>

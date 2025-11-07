@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 /**
  * @typedef {Object} BlocoSchema
@@ -35,7 +34,7 @@ const blocoSchema = new mongoose.Schema({
   collection: 'blocos'
 });
 
-blocoSchema.plugin(AutoIncrement, { inc_field: 'id', id: 'bloco_seq' });
+
 
 /**
  * Modelo Mongoose para Bloco

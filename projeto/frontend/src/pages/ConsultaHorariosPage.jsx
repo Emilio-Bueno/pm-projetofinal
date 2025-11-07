@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Box, FormControl, InputLabel, Select, MenuItem, Grid } from '@mui/material';
+import { Typography, Box, FormControl, InputLabel, Select, MenuItem, Grid, IconButton } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
+import { Delete } from '@mui/icons-material';
 import { aulaService } from '../services/aulaService.jsx';
 import { laboratorioService } from '../services/laboratorioService.jsx';
 import { professorService } from '../services/professorService.jsx';
@@ -91,55 +92,95 @@ const ConsultaHorariosPage = () => {
     });
   };
 
-  const getLaboratorioNome = (id) => {
-    const lab = options.laboratorios.find(l => l._id === id);
-    return lab ? lab.nome : id;
+  const handleDelete = async (id) => {
+    if (window.confirm('Tem certeza que deseja excluir esta aula?')) {
+      try {
+        await aulaService.remove(id);
+        loadData();
+      } catch (error) {
+        console.error('Erro ao excluir aula:', error);
+      }
+    }
   };
 
-  const getProfessorNome = (id) => {
-    const prof = options.professores.find(p => p._id === id);
-    return prof ? prof.nome : id;
+  const getLaboratorioNome = (laboratorio) => {
+    if (typeof laboratorio === 'object' && laboratorio?.nome) {
+      return laboratorio.nome;
+    }
+    const found = options.laboratorios.find(l => l._id === laboratorio);
+    return found ? found.nome : laboratorio;
   };
 
-  const getCursoNome = (id) => {
-    const curso = options.cursos.find(c => c._id === id);
-    return curso ? curso.nome : id;
+  const getProfessorNome = (professor) => {
+    if (typeof professor === 'object' && professor?.nome) {
+      return professor.nome;
+    }
+    const found = options.professores.find(p => p._id === professor);
+    return found ? found.nome : professor;
   };
 
-  const getDisciplinaNome = (id) => {
-    const disciplina = options.disciplinas.find(d => d._id === id);
-    return disciplina ? disciplina.nome : id;
+  const getCursoNome = (curso) => {
+    if (typeof curso === 'object' && curso?.nome) {
+      return curso.nome;
+    }
+    const found = options.cursos.find(c => c._id === curso);
+    return found ? found.nome : curso;
+  };
+
+  const getDisciplinaNome = (disciplina) => {
+    if (typeof disciplina === 'object' && disciplina?.nome) {
+      return disciplina.nome;
+    }
+    const found = options.disciplinas.find(d => d._id === disciplina);
+    return found ? found.nome : disciplina;
   };
 
   const columns = [
-    { field: 'semestre', headerName: 'Semestre', width: 120 },
+    { field: 'semestre', headerName: 'Semestre', width: 120, sortable: false },
     { 
       field: 'disciplinaId', 
       headerName: 'Disciplina', 
       width: 150,
+      sortable: false,
       renderCell: (params) => getDisciplinaNome(params.row.disciplinaId)
     },
     { 
       field: 'professorId', 
       headerName: 'Professor', 
       width: 150,
+      sortable: false,
       renderCell: (params) => getProfessorNome(params.row.professorId)
     },
     { 
       field: 'laboratorioId', 
       headerName: 'Laboratório', 
       width: 150,
+      sortable: false,
       renderCell: (params) => getLaboratorioNome(params.row.laboratorioId)
     },
     { 
       field: 'cursoId', 
       headerName: 'Curso', 
       width: 150,
+      sortable: false,
       renderCell: (params) => getCursoNome(params.row.cursoId)
     },
-    { field: 'diaSemana', headerName: 'Dia', width: 120 },
-    { field: 'dataInicio', headerName: 'Início', width: 120 },
-    { field: 'dataFim', headerName: 'Fim', width: 120 }
+    { field: 'diaSemana', headerName: 'Dia', width: 120, sortable: false },
+    { field: 'dataInicio', headerName: 'Início', width: 120, sortable: false },
+    { field: 'dataFim', headerName: 'Fim', width: 120, sortable: false },
+    {
+      field: 'actions',
+      headerName: 'Ações',
+      width: 120,
+      sortable: false,
+      renderCell: (params) => (
+        <Box>
+          <IconButton onClick={() => handleDelete(params.row._id)} size="small">
+            <Delete />
+          </IconButton>
+        </Box>
+      ),
+    }
   ];
 
   return (
@@ -228,11 +269,13 @@ const ConsultaHorariosPage = () => {
         <DataGrid
           rows={filteredAulas}
           columns={columns}
-          getRowId={(row) => row.id || row._id}
+          getRowId={(row) => row._id}
           loading={loading}
           autoHeight
           disableSelectionOnClick
           hideFooter
+          disableColumnMenu
+          sortingOrder={[]}
           sx={{ maxWidth: 'fit-content' }}
         />
       </Box>

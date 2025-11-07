@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 /**
  * @typedef {Object} LaboratorioSchema
@@ -31,7 +30,7 @@ const laboratorioSchema = new mongoose.Schema({
   collection: 'laboratorios'
 });
 
-laboratorioSchema.plugin(AutoIncrement, { inc_field: 'id', id: 'laboratorio_seq' });
+
 
 /**
  * Modelo Mongoose para Laboratorio

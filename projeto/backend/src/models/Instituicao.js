@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 /**
  * @typedef {Object} InstituicaoSchema
@@ -35,7 +34,7 @@ const instituicaoSchema = new mongoose.Schema({
   collection: 'instituicoes'
 });
 
-instituicaoSchema.plugin(AutoIncrement, { inc_field: 'id', id: 'instituicao_seq' });
+
 
 /**
  * Modelo Mongoose para Instituição

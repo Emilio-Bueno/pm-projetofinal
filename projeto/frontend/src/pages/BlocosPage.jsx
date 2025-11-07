@@ -63,15 +63,16 @@ const BlocosPage = () => {
   };
 
   const columns = [
-    { field: 'turno', headerName: 'Turno', width: 120 },
-    { field: 'diaSemana', headerName: 'Dia da Semana', width: 150 },
-    { field: 'inicio', headerName: 'Início', width: 100 },
-    { field: 'fim', headerName: 'Fim', width: 100 },
-    { field: 'ordem', headerName: 'Ordem', width: 100 },
+    { field: 'turno', headerName: 'Turno', width: 120, sortable: false },
+    { field: 'diaSemana', headerName: 'Dia da Semana', width: 150, sortable: false },
+    { field: 'inicio', headerName: 'Início', width: 100, sortable: false },
+    { field: 'fim', headerName: 'Fim', width: 100, sortable: false },
+    { field: 'ordem', headerName: 'Ordem', width: 100, sortable: false },
     {
       field: 'actions',
       headerName: 'Ações',
       width: 120,
+      sortable: false,
       renderCell: (params) => (
         <Box>
           <IconButton onClick={() => handleEdit(params.row)} size="small">
@@ -103,6 +104,8 @@ const BlocosPage = () => {
           autoHeight
           disableSelectionOnClick
           hideFooter
+          disableColumnMenu
+          sortingOrder={[]}
           sx={{ maxWidth: 'fit-content' }}
         />
       </Box>
