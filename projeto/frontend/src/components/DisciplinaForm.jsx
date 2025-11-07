@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Box, Grid } from '@mui/material';
+import { TextField, Button, Box, Grid, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { cursoService } from '../services/cursoService';
+import { professorService } from '../services/professorService';
 
 const DisciplinaForm = ({ data, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -9,6 +11,31 @@ const DisciplinaForm = ({ data, onSubmit, onCancel }) => {
     professorId: '',
     status: ''
   });
+  const [cursos, setCursos] = useState([]);
+  const [professores, setProfessores] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        const [cursosResponse, professoresResponse] = await Promise.all([
+          cursoService.getAll(),
+          professorService.getAll()
+        ]);
+        setCursos(cursosResponse.data || []);
+        setProfessores(professoresResponse.data || []);
+        console.log('Professores carregados:', professoresResponse.data);
+      } catch (error) {
+        console.error('Erro ao carregar dados:', error);
+        setCursos([]);
+        setProfessores([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
 
   useEffect(() => {
     if (data) {
@@ -36,23 +63,53 @@ const DisciplinaForm = ({ data, onSubmit, onCancel }) => {
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
-          <TextField
-            name="cursoId"
-            label="ID do Curso"
-            value={formData.cursoId}
-            onChange={handleChange}
-            fullWidth
-            required
-          />
+          <FormControl fullWidth required>
+            <InputLabel>Curso</InputLabel>
+            <Select
+              name="cursoId"
+              value={formData.cursoId || ''}
+              onChange={handleChange}
+              label="Curso"
+              disabled={loading}
+              sx={{ minWidth: 200 }}
+            >
+              {loading ? (
+                <MenuItem disabled>Carregando...</MenuItem>
+              ) : (
+                cursos.map((curso) => (
+                  <MenuItem key={curso._id} value={curso._id}>
+                    {curso.nome}
+                  </MenuItem>
+                ))
+              )}
+            </Select>
+          </FormControl>
         </Grid>
         <Grid item xs={12} sm={6}>
-          <TextField
-            name="professorId"
-            label="ID do Professor"
-            value={formData.professorId}
-            onChange={handleChange}
-            fullWidth
-          />
+          <FormControl fullWidth>
+            <InputLabel>Professor</InputLabel>
+            <Select
+              name="professorId"
+              value={formData.professorId || ''}
+              onChange={handleChange}
+              label="Professor"
+              disabled={loading}
+              sx={{ minWidth: 200 }}
+            >
+              {loading ? (
+                <MenuItem disabled>Carregando...</MenuItem>
+              ) : [
+                <MenuItem key="none" value="">
+                  <em>Nenhum</em>
+                </MenuItem>,
+                ...professores.map((professor) => (
+                  <MenuItem key={professor._id || professor.id} value={professor._id || professor.id}>
+                    {professor.nome}
+                  </MenuItem>
+                ))
+              ]}
+            </Select>
+          </FormControl>
         </Grid>
         <Grid item xs={12}>
           <TextField

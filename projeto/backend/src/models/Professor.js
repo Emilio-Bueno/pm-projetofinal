@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
+const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 /**
  * @typedef {Object} ProfessorSchema
+ * @property {number} id - ID auto-incremental do professor
  * @property {string} nome - Nome do professor (obrigatório)
  * @property {string} email - Email do professor (obrigatório, único)
  * @property {string} [telefone] - Telefone do professor (opcional)
@@ -28,6 +30,8 @@ const professorSchema = new mongoose.Schema({
 }, {
   collection: 'professores'
 });
+
+professorSchema.plugin(AutoIncrement, { inc_field: 'id', id: 'professor_seq' });
 
 /**
  * Modelo Mongoose para Professor

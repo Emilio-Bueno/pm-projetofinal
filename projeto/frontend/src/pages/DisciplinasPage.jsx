@@ -63,10 +63,32 @@ const DisciplinasPage = () => {
   };
 
   const columns = [
-    { field: 'cursoId', headerName: 'ID Curso', width: 150 },
+    { 
+      field: 'cursoId', 
+      headerName: 'Curso', 
+      width: 200, 
+      renderCell: (params) => {
+        const curso = params.row.cursoId;
+        if (typeof curso === 'object' && curso?.nome) {
+          return curso.nome;
+        }
+        return curso || '';
+      }
+    },
     { field: 'nome', headerName: 'Nome', width: 200 },
     { field: 'cargaHoraria', headerName: 'Carga Horária', width: 120 },
-    { field: 'professorId', headerName: 'ID Professor', width: 150 },
+    { 
+      field: 'professorId', 
+      headerName: 'Professor', 
+      width: 150, 
+      renderCell: (params) => {
+        const professor = params.row.professorId;
+        if (typeof professor === 'object' && professor?.nome) {
+          return professor.nome;
+        }
+        return professor ? 'N/A' : 'Nenhum';
+      }
+    },
     { field: 'status', headerName: 'Status', width: 100 },
     {
       field: 'actions',
@@ -94,14 +116,18 @@ const DisciplinasPage = () => {
         </Button>
       </Box>
       
-      <DataGrid
-        rows={disciplinas}
-        columns={columns}
-        getRowId={(row) => row._id}
-        loading={loading}
-        autoHeight
-        disableSelectionOnClick
-      />
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <DataGrid
+          rows={disciplinas}
+          columns={columns}
+          getRowId={(row) => row._id}
+          loading={loading}
+          autoHeight
+          disableSelectionOnClick
+          hideFooter
+          sx={{ maxWidth: 'fit-content' }}
+        />
+      </Box>
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
         <Box sx={{
@@ -109,7 +135,7 @@ const DisciplinasPage = () => {
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          width: 600,
+          width: 800,
           bgcolor: 'background.paper',
           boxShadow: 24,
           p: 4,

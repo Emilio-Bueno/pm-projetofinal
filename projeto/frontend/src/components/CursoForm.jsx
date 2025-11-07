@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Box, Grid } from '@mui/material';
+import { TextField, Button, Box, Grid, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 
 const CursoForm = ({ data, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -8,12 +8,31 @@ const CursoForm = ({ data, onSubmit, onCancel }) => {
     turnos: '',
     status: ''
   });
+  const [instituicoes, setInstituicoes] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const loadInstituicoes = async () => {
+      try {
+        setLoading(true);
+        const { instituicaoService } = await import('../services/instituicaoService');
+        const response = await instituicaoService.getAll();
+        setInstituicoes(response.data || []);
+      } catch (error) {
+        console.error('Erro ao carregar instituições:', error);
+        setInstituicoes([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadInstituicoes();
+  }, []);
 
   useEffect(() => {
     if (data) {
       setFormData({
         ...data,
-        turnos: Array.isArray(data.turnos) ? data.turnos.join(', ') : data.turnos || ''
+        turnos: Array.isArray(data.turnos) ? data.turnos : (data.turnos ? data.turnos.split(', ') : [])
       });
     }
   }, [data]);
@@ -29,7 +48,7 @@ const CursoForm = ({ data, onSubmit, onCancel }) => {
     e.preventDefault();
     const submitData = {
       ...formData,
-      turnos: formData.turnos.split(',').map(t => t.trim()).filter(t => t)
+      turnos: Array.isArray(formData.turnos) ? formData.turnos : []
     };
     onSubmit(submitData);
   };
@@ -38,14 +57,29 @@ const CursoForm = ({ data, onSubmit, onCancel }) => {
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <TextField
-            name="instituicaoId"
-            label="ID da Instituição"
-            value={formData.instituicaoId}
-            onChange={handleChange}
-            fullWidth
-            required
-          />
+          <FormControl fullWidth required>
+            <InputLabel>Instituição</InputLabel>
+            <Select
+              name="instituicaoId"
+              value={formData.instituicaoId || ''}
+              onChange={handleChange}
+              label="Instituição"
+              disabled={loading}
+              sx={{ minWidth: 200 }}
+            >
+              {loading ? (
+                <MenuItem disabled>Carregando...</MenuItem>
+              ) : instituicoes.length > 0 ? (
+                instituicoes.map((instituicao) => (
+                  <MenuItem key={instituicao._id} value={instituicao._id}>
+                    {instituicao.nome} - {instituicao.sigla}
+                  </MenuItem>
+                ))
+              ) : (
+                <MenuItem disabled>Nenhuma instituição encontrada</MenuItem>
+              )}
+            </Select>
+          </FormControl>
         </Grid>
         <Grid item xs={12}>
           <TextField
@@ -58,13 +92,21 @@ const CursoForm = ({ data, onSubmit, onCancel }) => {
           />
         </Grid>
         <Grid item xs={12}>
-          <TextField
-            name="turnos"
-            label="Turnos (separados por vírgula)"
-            value={formData.turnos}
-            onChange={handleChange}
-            fullWidth
-          />
+          <FormControl fullWidth>
+            <InputLabel>Turnos</InputLabel>
+            <Select
+              name="turnos"
+              multiple
+              value={Array.isArray(formData.turnos) ? formData.turnos : (formData.turnos ? formData.turnos.split(', ') : [])}
+              onChange={(e) => setFormData({ ...formData, turnos: e.target.value })}
+              label="Turnos"
+              sx={{ minWidth: 200 }}
+            >
+              <MenuItem value="Manhã">Manhã</MenuItem>
+              <MenuItem value="Tarde">Tarde</MenuItem>
+              <MenuItem value="Noite">Noite</MenuItem>
+            </Select>
+          </FormControl>
         </Grid>
         <Grid item xs={12}>
           <TextField

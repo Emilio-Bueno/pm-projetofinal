@@ -31,7 +31,7 @@ const FormularioAulaPage = () => {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const diasSemana = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+  const diasSemana = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 
   useEffect(() => {
     loadOptions();
@@ -60,10 +60,29 @@ const FormularioAulaPage = () => {
   };
 
   const handleChange = (e) => {
-    setFormData({
+    const { name, value } = e.target;
+    
+    let updatedFormData = {
       ...formData,
-      [e.target.name]: e.target.value
-    });
+      [name]: value
+    };
+    
+    // Se mudou a data de início, calcular o dia da semana automaticamente
+    if (name === 'dataInicio' && value) {
+      const date = new Date(value);
+      const diasSemanaMap = {
+        0: 'Domingo',
+        1: 'Segunda',
+        2: 'Terça',
+        3: 'Quarta',
+        4: 'Quinta',
+        5: 'Sexta',
+        6: 'Sábado'
+      };
+      updatedFormData.diaSemana = diasSemanaMap[date.getDay()];
+    }
+    
+    setFormData(updatedFormData);
   };
 
   const handleSubmit = async (e) => {
@@ -86,7 +105,8 @@ const FormularioAulaPage = () => {
         blocos: ''
       });
     } catch (error) {
-      setMessage('Erro ao criar aula: ' + error.message);
+      const errorMessage = error.response?.data?.error || error.message;
+      setMessage('Erro ao criar aula: ' + errorMessage);
     } finally {
       setLoading(false);
     }
@@ -152,6 +172,7 @@ const FormularioAulaPage = () => {
                 value={formData.cursoId}
                 onChange={handleChange}
                 label="Curso"
+                sx={{ minWidth: 200 }}
               >
                 {options.cursos.map((curso) => (
                   <MenuItem key={curso._id} value={curso._id}>
@@ -170,6 +191,7 @@ const FormularioAulaPage = () => {
                 value={formData.disciplinaId}
                 onChange={handleChange}
                 label="Disciplina"
+                sx={{ minWidth: 200 }}
               >
                 {options.disciplinas.map((disciplina) => (
                   <MenuItem key={disciplina._id} value={disciplina._id}>
@@ -188,6 +210,7 @@ const FormularioAulaPage = () => {
                 value={formData.professorId}
                 onChange={handleChange}
                 label="Professor"
+                sx={{ minWidth: 200 }}
               >
                 {options.professores.map((professor) => (
                   <MenuItem key={professor._id} value={professor._id}>
@@ -206,6 +229,7 @@ const FormularioAulaPage = () => {
                 value={formData.laboratorioId}
                 onChange={handleChange}
                 label="Laboratório"
+                sx={{ minWidth: 200 }}
               >
                 {options.laboratorios.map((laboratorio) => (
                   <MenuItem key={laboratorio._id} value={laboratorio._id}>
@@ -224,6 +248,7 @@ const FormularioAulaPage = () => {
                 value={formData.diaSemana}
                 onChange={handleChange}
                 label="Dia da Semana"
+                sx={{ minWidth: 200 }}
               >
                 {diasSemana.map((dia) => (
                   <MenuItem key={dia} value={dia}>
@@ -242,6 +267,7 @@ const FormularioAulaPage = () => {
                 value={formData.blocos}
                 onChange={handleChange}
                 label="Bloco de Horário"
+                sx={{ minWidth: 200 }}
               >
                 {options.blocos.map((bloco) => (
                   <MenuItem key={bloco._id} value={bloco._id}>

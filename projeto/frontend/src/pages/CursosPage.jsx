@@ -14,10 +14,13 @@ const CursosPage = () => {
   const loadCursos = async () => {
     setLoading(true);
     try {
+      console.log('Carregando cursos...');
       const response = await cursoService.getAll();
-      setCursos(response.data);
+      console.log('Cursos carregados:', response.data);
+      setCursos(response.data || []);
     } catch (error) {
       console.error('Erro ao carregar cursos:', error);
+      setCursos([]);
     } finally {
       setLoading(false);
     }
@@ -63,9 +66,31 @@ const CursosPage = () => {
   };
 
   const columns = [
-    { field: 'instituicaoId', headerName: 'ID Instituição', width: 150 },
+    { 
+      field: 'instituicaoId', 
+      headerName: 'Instituição', 
+      width: 200, 
+      renderCell: (params) => {
+        const instituicao = params.row.instituicaoId;
+        if (typeof instituicao === 'object' && instituicao?.nome) {
+          return `${instituicao.nome} - ${instituicao.sigla}`;
+        }
+        return instituicao || '';
+      }
+    },
     { field: 'nome', headerName: 'Nome', width: 200 },
-    { field: 'turnos', headerName: 'Turnos', width: 150, valueGetter: (params) => Array.isArray(params.row.turnos) ? params.row.turnos.join(', ') : params.row.turnos },
+    { 
+      field: 'turnos', 
+      headerName: 'Turnos', 
+      width: 150, 
+      renderCell: (params) => {
+        const turnos = params.row.turnos;
+        if (Array.isArray(turnos)) {
+          return turnos.join(', ');
+        }
+        return turnos || '';
+      }
+    },
     { field: 'status', headerName: 'Status', width: 100 },
     {
       field: 'actions',
@@ -93,14 +118,18 @@ const CursosPage = () => {
         </Button>
       </Box>
       
-      <DataGrid
-        rows={cursos}
-        columns={columns}
-        getRowId={(row) => row._id}
-        loading={loading}
-        autoHeight
-        disableSelectionOnClick
-      />
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <DataGrid
+          rows={cursos}
+          columns={columns}
+          getRowId={(row) => row._id}
+          loading={loading}
+          autoHeight
+          disableSelectionOnClick
+          hideFooter
+          sx={{ maxWidth: 'fit-content' }}
+        />
+      </Box>
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
         <Box sx={{
@@ -108,7 +137,7 @@ const CursosPage = () => {
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          width: 600,
+          width: 800,
           bgcolor: 'background.paper',
           boxShadow: 24,
           p: 4,

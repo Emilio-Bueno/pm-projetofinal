@@ -5,6 +5,7 @@ import { aulaService } from '../services/aulaService.jsx';
 import { laboratorioService } from '../services/laboratorioService.jsx';
 import { professorService } from '../services/professorService.jsx';
 import { cursoService } from '../services/cursoService.jsx';
+import { disciplinaService } from '../services/disciplinaService.jsx';
 
 const ConsultaHorariosPage = () => {
   const [aulas, setAulas] = useState([]);
@@ -20,7 +21,8 @@ const ConsultaHorariosPage = () => {
   const [options, setOptions] = useState({
     laboratorios: [],
     professores: [],
-    cursos: []
+    cursos: [],
+    disciplinas: []
   });
 
   useEffect(() => {
@@ -34,18 +36,20 @@ const ConsultaHorariosPage = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [aulasRes, laboratoriosRes, professoresRes, cursosRes] = await Promise.all([
+      const [aulasRes, laboratoriosRes, professoresRes, cursosRes, disciplinasRes] = await Promise.all([
         aulaService.getAll(),
         laboratorioService.getAll(),
         professorService.getAll(),
-        cursoService.getAll()
+        cursoService.getAll(),
+        disciplinaService.getAll()
       ]);
 
       setAulas(aulasRes.data);
       setOptions({
         laboratorios: laboratoriosRes.data,
         professores: professoresRes.data,
-        cursos: cursosRes.data
+        cursos: cursosRes.data,
+        disciplinas: disciplinasRes.data
       });
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
@@ -102,26 +106,36 @@ const ConsultaHorariosPage = () => {
     return curso ? curso.nome : id;
   };
 
+  const getDisciplinaNome = (id) => {
+    const disciplina = options.disciplinas.find(d => d._id === id);
+    return disciplina ? disciplina.nome : id;
+  };
+
   const columns = [
     { field: 'semestre', headerName: 'Semestre', width: 120 },
-    { field: 'disciplinaId', headerName: 'Disciplina', width: 150 },
+    { 
+      field: 'disciplinaId', 
+      headerName: 'Disciplina', 
+      width: 150,
+      renderCell: (params) => getDisciplinaNome(params.row.disciplinaId)
+    },
     { 
       field: 'professorId', 
       headerName: 'Professor', 
       width: 150,
-      valueGetter: (params) => getProfessorNome(params.row.professorId)
+      renderCell: (params) => getProfessorNome(params.row.professorId)
     },
     { 
       field: 'laboratorioId', 
       headerName: 'Laboratório', 
       width: 150,
-      valueGetter: (params) => getLaboratorioNome(params.row.laboratorioId)
+      renderCell: (params) => getLaboratorioNome(params.row.laboratorioId)
     },
     { 
       field: 'cursoId', 
       headerName: 'Curso', 
       width: 150,
-      valueGetter: (params) => getCursoNome(params.row.cursoId)
+      renderCell: (params) => getCursoNome(params.row.cursoId)
     },
     { field: 'diaSemana', headerName: 'Dia', width: 120 },
     { field: 'dataInicio', headerName: 'Início', width: 120 },
@@ -144,6 +158,7 @@ const ConsultaHorariosPage = () => {
                 value={filters.laboratorioId}
                 onChange={handleFilterChange}
                 label="Laboratório"
+                sx={{ minWidth: 200 }}
               >
                 <MenuItem value="">Todos</MenuItem>
                 {options.laboratorios.map((lab) => (
@@ -163,6 +178,7 @@ const ConsultaHorariosPage = () => {
                 value={filters.professorId}
                 onChange={handleFilterChange}
                 label="Professor"
+                sx={{ minWidth: 200 }}
               >
                 <MenuItem value="">Todos</MenuItem>
                 {options.professores.map((prof) => (
@@ -182,6 +198,7 @@ const ConsultaHorariosPage = () => {
                 value={filters.cursoId}
                 onChange={handleFilterChange}
                 label="Curso"
+                sx={{ minWidth: 200 }}
               >
                 <MenuItem value="">Todos</MenuItem>
                 {options.cursos.map((curso) => (
@@ -207,20 +224,18 @@ const ConsultaHorariosPage = () => {
         </Grid>
       </Box>
 
-      <DataGrid
-        rows={filteredAulas}
-        columns={columns}
-        getRowId={(row) => row._id}
-        loading={loading}
-        autoHeight
-        disableSelectionOnClick
-        initialState={{
-          pagination: {
-            paginationModel: { pageSize: 10 }
-          }
-        }}
-        pageSizeOptions={[10, 25, 50]}
-      />
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <DataGrid
+          rows={filteredAulas}
+          columns={columns}
+          getRowId={(row) => row.id || row._id}
+          loading={loading}
+          autoHeight
+          disableSelectionOnClick
+          hideFooter
+          sx={{ maxWidth: 'fit-content' }}
+        />
+      </Box>
     </Box>
   );
 };

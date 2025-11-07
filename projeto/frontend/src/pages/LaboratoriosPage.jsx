@@ -93,14 +93,18 @@ const LaboratoriosPage = () => {
         </Button>
       </Box>
       
-      <DataGrid
-        rows={laboratorios}
-        columns={columns}
-        getRowId={(row) => row._id}
-        loading={loading}
-        autoHeight
-        disableSelectionOnClick
-      />
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <DataGrid
+          rows={laboratorios}
+          columns={columns}
+          getRowId={(row) => row._id}
+          loading={loading}
+          autoHeight
+          disableSelectionOnClick
+          hideFooter
+          sx={{ maxWidth: 'fit-content' }}
+        />
+      </Box>
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
         <Box sx={{

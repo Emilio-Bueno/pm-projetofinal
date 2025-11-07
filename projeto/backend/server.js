@@ -44,12 +44,14 @@ const professorRoutes = require('./src/routes/professor');
 const disciplinaRoutes = require('./src/routes/disciplina');
 const laboratorioRoutes = require('./src/routes/laboratorio');
 const blocoRoutes = require('./src/routes/bloco');
+const aulaRoutes = require('./src/routes/aula');
 app.use('/api/v1/instituicoes', instituicaoRoutes);
 app.use('/api/v1/cursos', cursoRoutes);
 app.use('/api/v1/professores', professorRoutes);
 app.use('/api/v1/disciplinas', disciplinaRoutes);
 app.use('/api/v1/laboratorios', laboratorioRoutes);
 app.use('/api/v1/blocos', blocoRoutes);
+app.use('/api/v1/aulas', aulaRoutes);
 
 // MongoDB connection
 const mongoUrl = `mongodb://${process.env.MONGO_INITDB_ROOT_USERNAME}:${process.env.MONGO_INITDB_ROOT_PASSWORD}@${process.env.MONGO_INITDB_HOST}:${process.env.MONGO_INITDB_PORT}/${process.env.MONGO_INITDB_DATABASE}?authSource=admin`;

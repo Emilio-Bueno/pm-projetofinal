@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
+const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 /**
  * @typedef {Object} BlocoSchema
+ * @property {number} id - ID auto-incremental do bloco
  * @property {string} turno - Turno do bloco (obrigatório)
  * @property {string} diaSemana - Dia da semana (obrigatório)
  * @property {string} inicio - Horário de início (obrigatório)
@@ -32,6 +34,8 @@ const blocoSchema = new mongoose.Schema({
 }, {
   collection: 'blocos'
 });
+
+blocoSchema.plugin(AutoIncrement, { inc_field: 'id', id: 'bloco_seq' });
 
 /**
  * Modelo Mongoose para Bloco
