@@ -1,3 +1,4 @@
+// Imports necessários para o componente
 import React, { useState, useEffect } from 'react';
 import { TextField, Select, MenuItem, FormControl, InputLabel, Button, Grid, Box } from '@mui/material';
 import { cursoService } from '../services/cursoService.jsx';
@@ -6,7 +7,9 @@ import { professorService } from '../services/professorService.jsx';
 import { laboratorioService } from '../services/laboratorioService.jsx';
 import { blocoService } from '../services/blocoService.jsx';
 
+// Componente de formulário para cadastro/edição de aulas
 const AulaForm = ({ data, onSubmit, onCancel, resetForm, onResetComplete }) => {
+  // Estado do formulário com todos os campos da aula
   const [formData, setFormData] = useState({
     semestre: '',
     dataInicio: '',
@@ -19,6 +22,7 @@ const AulaForm = ({ data, onSubmit, onCancel, resetForm, onResetComplete }) => {
     blocos: ''
   });
 
+  // Estado para armazenar opções dos selects
   const [options, setOptions] = useState({
     cursos: [],
     disciplinas: [],
@@ -27,16 +31,21 @@ const AulaForm = ({ data, onSubmit, onCancel, resetForm, onResetComplete }) => {
     blocos: []
   });
 
+  // Estado de carregamento
   const [loading, setLoading] = useState(false);
-  const diasSemana = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+  
+  // Dias da semana disponíveis (excluindo domingo)
+  const diasSemana = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 
+  // Carrega opções dos selects na inicialização
   useEffect(() => {
     loadOptions();
   }, []);
 
+  // Processa dados recebidos para edição
   useEffect(() => {
     if (data) {
-      // Tratar IDs que podem vir como objetos e converter datas
+      // Normaliza IDs que podem vir como objetos populados
       const processedData = {
         ...data,
         cursoId: typeof data.cursoId === 'object' ? data.cursoId._id : data.cursoId,
@@ -44,6 +53,7 @@ const AulaForm = ({ data, onSubmit, onCancel, resetForm, onResetComplete }) => {
         professorId: typeof data.professorId === 'object' ? data.professorId._id : data.professorId,
         laboratorioId: typeof data.laboratorioId === 'object' ? data.laboratorioId._id : data.laboratorioId,
         blocos: typeof data.blocos === 'object' ? data.blocos._id : data.blocos,
+        // Converte datas para formato do input date
         dataInicio: data.dataInicio ? new Date(data.dataInicio).toISOString().split('T')[0] : '',
         dataFim: data.dataFim ? new Date(data.dataFim).toISOString().split('T')[0] : ''
       };
@@ -51,6 +61,7 @@ const AulaForm = ({ data, onSubmit, onCancel, resetForm, onResetComplete }) => {
     }
   }, [data]);
 
+  // Reseta formulário quando solicitado
   useEffect(() => {
     if (resetForm) {
       setFormData({
@@ -70,9 +81,11 @@ const AulaForm = ({ data, onSubmit, onCancel, resetForm, onResetComplete }) => {
     }
   }, [resetForm, onResetComplete]);
 
+  // Carrega todas as opções dos selects em paralelo
   const loadOptions = async () => {
     try {
       setLoading(true);
+      // Executa todas as requisições simultaneamente
       const [cursosRes, disciplinasRes, professoresRes, laboratoriosRes, blocosRes] = await Promise.all([
         cursoService.getAll(),
         disciplinaService.getAll(),
@@ -81,6 +94,7 @@ const AulaForm = ({ data, onSubmit, onCancel, resetForm, onResetComplete }) => {
         blocoService.getAll()
       ]);
 
+      // Atualiza estado com os dados recebidos
       setOptions({
         cursos: cursosRes.data || [],
         disciplinas: disciplinasRes.data || [],
@@ -95,6 +109,7 @@ const AulaForm = ({ data, onSubmit, onCancel, resetForm, onResetComplete }) => {
     }
   };
 
+  // Manipula mudanças nos campos do formulário
   const handleChange = (e) => {
     const { name, value } = e.target;
     
@@ -103,11 +118,10 @@ const AulaForm = ({ data, onSubmit, onCancel, resetForm, onResetComplete }) => {
       [name]: value
     };
     
-    // Se mudou a data de início, calcular o dia da semana automaticamente
+    // Auto-calcula dia da semana quando data de início é alterada
     if (name === 'dataInicio' && value) {
       const date = new Date(value);
       const diasSemanaMap = {
-        0: 'Domingo',
         1: 'Segunda',
         2: 'Terça',
         3: 'Quarta',
@@ -115,20 +129,32 @@ const AulaForm = ({ data, onSubmit, onCancel, resetForm, onResetComplete }) => {
         5: 'Sexta',
         6: 'Sábado'
       };
-      updatedFormData.diaSemana = diasSemanaMap[date.getDay()];
+      const dayOfWeek = date.getDay();
+      // Validação: não permite domingo
+      if (dayOfWeek === 0) {
+        alert('Não é possível cadastrar aulas no domingo!');
+        updatedFormData.dataInicio = '';
+        updatedFormData.diaSemana = '';
+      } else {
+        updatedFormData.diaSemana = diasSemanaMap[dayOfWeek];
+      }
     }
     
     setFormData(updatedFormData);
   };
 
+  // Submete o formulário
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(formData);
   };
 
+  // Renderização do formulário
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+      {/* Grid container para organizar campos */}
       <Grid container spacing={3}>
+        {/* Campos de informações básicas */}
         <Grid item xs={12} md={4}>
           <TextField
             name="semestre"
@@ -164,6 +190,7 @@ const AulaForm = ({ data, onSubmit, onCancel, resetForm, onResetComplete }) => {
           />
         </Grid>
 
+        {/* Selects para entidades relacionadas */}
         <Grid item xs={12}>
           <FormControl fullWidth required>
             <InputLabel>Curso</InputLabel>
@@ -195,8 +222,8 @@ const AulaForm = ({ data, onSubmit, onCancel, resetForm, onResetComplete }) => {
               disabled={loading}
               sx={{ minWidth: 200 }}
             >
-              {options.disciplinas.map((disciplina) => (
-                <MenuItem key={disciplina._id} value={disciplina._id}>
+              {options.disciplinas.map((disciplina, index) => (
+                <MenuItem key={disciplina._id || `disciplina-${index}`} value={disciplina._id}>
                   {disciplina.nome}
                 </MenuItem>
               ))}
@@ -244,6 +271,7 @@ const AulaForm = ({ data, onSubmit, onCancel, resetForm, onResetComplete }) => {
           </FormControl>
         </Grid>
 
+        {/* Campos de horário */}
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth required>
             <InputLabel>Dia da Semana</InputLabel>
@@ -283,6 +311,7 @@ const AulaForm = ({ data, onSubmit, onCancel, resetForm, onResetComplete }) => {
           </FormControl>
         </Grid>
 
+        {/* Botões de ação */}
         <Grid item xs={12}>
           <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
             <Button onClick={onCancel} variant="outlined">

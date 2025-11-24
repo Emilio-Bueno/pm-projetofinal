@@ -15,7 +15,24 @@ const DisciplinasPage = () => {
     setLoading(true);
     try {
       const response = await disciplinaService.getAll();
-      setDisciplinas(response.data);
+      console.log('Dados recebidos:', response.data);
+      
+      // Filtrar e garantir IDs únicos
+      const idsVistos = new Set();
+      const disciplinasUnicas = response.data
+        .filter(disciplina => {
+          if (!disciplina._id) return false;
+          if (idsVistos.has(disciplina._id)) return false;
+          idsVistos.add(disciplina._id);
+          return true;
+        })
+        .map((disciplina, index) => ({
+          ...disciplina,
+          _id: disciplina._id || `temp-${index}-${Date.now()}`
+        }));
+      
+      console.log('Disciplinas processadas:', disciplinasUnicas);
+      setDisciplinas(disciplinasUnicas);
     } catch (error) {
       console.error('Erro ao carregar disciplinas:', error);
     } finally {

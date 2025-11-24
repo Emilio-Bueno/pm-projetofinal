@@ -98,16 +98,18 @@ const DisciplinaForm = ({ data, onSubmit, onCancel }) => {
             >
               {loading ? (
                 <MenuItem disabled>Carregando...</MenuItem>
-              ) : [
-                <MenuItem key="none" value="">
-                  <em>Nenhum</em>
-                </MenuItem>,
-                ...professores.map((professor) => (
-                  <MenuItem key={professor._id || professor.id} value={professor._id || professor.id}>
-                    {professor.nome}
+              ) : (
+                <>
+                  <MenuItem value="">
+                    <em>Nenhum</em>
                   </MenuItem>
-                ))
-              ]}
+                  {professores.map((professor, index) => (
+                    <MenuItem key={professor._id || `prof-${index}`} value={professor._id || professor.id}>
+                      {professor.nome}
+                    </MenuItem>
+                  ))}
+                </>
+              )}
             </Select>
           </FormControl>
         </Grid>

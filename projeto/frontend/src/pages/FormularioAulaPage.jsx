@@ -132,7 +132,16 @@ const FormularioAulaPage = () => {
 
   const columns = [
     { field: 'semestre', headerName: 'Semestre', width: 120 },
-    { field: 'disciplinaId', headerName: 'Disciplina', width: 150 },
+    { 
+      field: 'disciplinaId', 
+      headerName: 'Disciplina', 
+      width: 150,
+      renderCell: (params) => {
+        const id = typeof params.row.disciplinaId === 'object' ? params.row.disciplinaId._id : params.row.disciplinaId;
+        const disciplina = options.disciplinas.find(d => d._id === id);
+        return disciplina ? disciplina.nome : id;
+      }
+    },
     { 
       field: 'professorId', 
       headerName: 'Professor', 
@@ -158,16 +167,6 @@ const FormularioAulaPage = () => {
       renderCell: (params) => {
         const id = typeof params.row.cursoId === 'object' ? params.row.cursoId._id : params.row.cursoId;
         return getCursoNome(id);
-      }
-    },
-    { 
-      field: 'disciplinaId', 
-      headerName: 'Disciplina', 
-      width: 150,
-      renderCell: (params) => {
-        const id = typeof params.row.disciplinaId === 'object' ? params.row.disciplinaId._id : params.row.disciplinaId;
-        const disciplina = options.disciplinas.find(d => d._id === id);
-        return disciplina ? disciplina.nome : id;
       }
     },
     { field: 'diaSemana', headerName: 'Dia', width: 120 },
