@@ -72,13 +72,13 @@ const ConsultaHorariosPage = () => {
       ]);
 
       // Atualiza estados com os dados recebidos
-      setAulas(aulasRes.data);
+      setAulas(aulasRes.data || []);
       setOptions({
-        laboratorios: laboratoriosRes.data,
-        professores: professoresRes.data,
-        cursos: cursosRes.data,
-        blocos: blocosRes.data,
-        disciplinas: disciplinasRes.data
+        laboratorios: laboratoriosRes.data || [],
+        professores: professoresRes.data || [],
+        cursos: cursosRes.data || [],
+        blocos: blocosRes.data || [],
+        disciplinas: disciplinasRes.data || []
       });
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
@@ -197,18 +197,27 @@ const ConsultaHorariosPage = () => {
                          blocoDaAula = options.blocos.find(b => b._id === aula.blocos);
                     }
 
-                    if (!blocoDaAula) {
-                        console.warn(`Aula sem bloco válido encontrado (ID: ${aula.blocos})`);
-                        return false;
-                    }
+                    if (!blocoDaAula) return false;
 
-                    // Comparação de horários normalizados
-                    const inicioAula = normalizeTime(blocoDaAula.inicio);
-                    const fimAula = normalizeTime(blocoDaAula.fim);
-                    const inicioGrade = normalizeTime(horario.inicio);
-                    const fimGrade = normalizeTime(horario.fim);
+                    // Comparação de horários - verifica se o slot da grade está dentro do período da aula
+                    const inicioAula = blocoDaAula.inicio;
+                    const fimAula = blocoDaAula.fim;
+                    const inicioGrade = horario.inicio;
+                    const fimGrade = horario.fim;
 
-                    const horarioBate = (inicioAula === inicioGrade && fimAula === fimGrade);
+                    // Converte horários para minutos para comparação
+                    const toMinutes = (time) => {
+                      const [h, m] = time.split(':').map(Number);
+                      return h * 60 + m;
+                    };
+
+                    const inicioAulaMin = toMinutes(inicioAula);
+                    const fimAulaMin = toMinutes(fimAula);
+                    const inicioGradeMin = toMinutes(inicioGrade);
+                    const fimGradeMin = toMinutes(fimGrade);
+
+                    // Verifica se o slot da grade está dentro do período da aula
+                    const horarioBate = inicioGradeMin >= inicioAulaMin && fimGradeMin <= fimAulaMin;
 
                     return horarioBate;
                   });

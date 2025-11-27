@@ -23,9 +23,16 @@ const DisciplinaForm = ({ data, onSubmit, onCancel }) => {
           cursoService.getAll(),
           professorService.getAll()
         ]);
-        setCursos(cursosResponse.data || []);
-        setProfessores(professoresResponse.data || []);
-        console.log('Professores carregados:', professoresResponse.data);
+        
+        // Garantir que os dados sejam arrays válidos
+        const cursosData = Array.isArray(cursosResponse.data) ? cursosResponse.data : [];
+        const professoresData = Array.isArray(professoresResponse.data) ? professoresResponse.data : [];
+        
+        setCursos(cursosData);
+        setProfessores(professoresData);
+        
+        console.log('Cursos carregados:', cursosData);
+        console.log('Professores carregados:', professoresData);
       } catch (error) {
         console.error('Erro ao carregar dados:', error);
         setCursos([]);
@@ -39,14 +46,22 @@ const DisciplinaForm = ({ data, onSubmit, onCancel }) => {
 
   useEffect(() => {
     if (data) {
-      setFormData(data);
+      // Garantir que os IDs sejam strings, não objetos populados
+      const processedData = {
+        ...data,
+        cursoId: typeof data.cursoId === 'object' ? data.cursoId._id : data.cursoId,
+        professorId: typeof data.professorId === 'object' ? data.professorId._id : data.professorId
+      };
+      setFormData(processedData);
     }
   }, [data]);
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+    console.log(`Campo alterado: ${name} = ${value}`);
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value
     });
   };
 
@@ -54,8 +69,16 @@ const DisciplinaForm = ({ data, onSubmit, onCancel }) => {
     e.preventDefault();
     const submitData = {
       ...formData,
-      cargaHoraria: Number(formData.cargaHoraria)
+      cargaHoraria: Number(formData.cargaHoraria),
+      // Remover professorId se estiver vazio
+      professorId: formData.professorId || undefined
     };
+    // Remover campos undefined
+    Object.keys(submitData).forEach(key => {
+      if (submitData[key] === undefined) {
+        delete submitData[key];
+      }
+    });
     onSubmit(submitData);
   };
 
@@ -96,20 +119,21 @@ const DisciplinaForm = ({ data, onSubmit, onCancel }) => {
               disabled={loading}
               sx={{ minWidth: 200 }}
             >
-              {loading ? (
-                <MenuItem disabled>Carregando...</MenuItem>
-              ) : (
-                <>
-                  <MenuItem value="">
-                    <em>Nenhum</em>
-                  </MenuItem>
-                  {professores.map((professor, index) => (
-                    <MenuItem key={professor._id || `prof-${index}`} value={professor._id || professor.id}>
-                      {professor.nome}
-                    </MenuItem>
-                  ))}
-                </>
-              )}
+              {loading ? [
+                <MenuItem key="loading" disabled>Carregando...</MenuItem>
+              ] : [
+                <MenuItem key="empty" value="">
+                  <em>Nenhum</em>
+                </MenuItem>,
+                ...(professores && professores.length > 0 
+                  ? professores.map((professor) => (
+                      <MenuItem key={professor._id} value={professor._id}>
+                        {professor.nome}
+                      </MenuItem>
+                    ))
+                  : [<MenuItem key="no-professors" disabled>Nenhum professor cadastrado</MenuItem>]
+                )
+              ]}
             </Select>
           </FormControl>
         </Grid>
