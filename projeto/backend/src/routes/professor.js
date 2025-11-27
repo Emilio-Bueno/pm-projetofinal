@@ -41,11 +41,19 @@ const router = express.Router();
  */
 router.post('/', async (req, res) => {
   try {
+    const { email } = req.body;
+    const existingProfessor = await Professor.findOne({ email });
+    if (existingProfessor) {
+      return res.status(400).json({ error: 'Já existe um professor com este email' });
+    }
     const professor = new Professor(req.body);
     await professor.save();
     res.status(201).json(professor);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    if (error.code === 11000) {
+      return res.status(400).json({ error: 'Já existe um professor com este email' });
+    }
+    res.status(400).json({ error: 'Erro ao salvar professor. Verifique os dados informados.' });
   }
 });
 
@@ -98,11 +106,19 @@ router.get('/', async (req, res) => {
  */
 router.put('/:id', async (req, res) => {
   try {
+    const { email } = req.body;
+    const existingProfessor = await Professor.findOne({ email, _id: { $ne: req.params.id } });
+    if (existingProfessor) {
+      return res.status(400).json({ error: 'Já existe um professor com este email' });
+    }
     const professor = await Professor.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!professor) return res.status(404).json({ error: 'Professor não encontrado' });
     res.json(professor);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    if (error.code === 11000) {
+      return res.status(400).json({ error: 'Já existe um professor com este email' });
+    }
+    res.status(400).json({ error: 'Erro ao atualizar professor. Verifique os dados informados.' });
   }
 });
 

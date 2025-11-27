@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Box, Grid, FormControl, InputLabel, Select, MenuItem, Typography } from '@mui/material';
+import { TextField, Button, Box, Grid, FormControl, InputLabel, Select, MenuItem, Typography, Alert } from '@mui/material';
 
 const BlocoForm = ({ data, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -9,6 +9,7 @@ const BlocoForm = ({ data, onSubmit, onCancel }) => {
     fim: '',
     ordem: ''
   });
+  const [error, setError] = useState('');
 
   const horariosMatutino = {
     inicio: ['7:40', '8:30', '9:30', '10:20', '11:20', '12:10'],
@@ -59,17 +60,27 @@ const BlocoForm = ({ data, onSubmit, onCancel }) => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const submitData = {
-      ...formData,
-      ordem: Number(formData.ordem)
-    };
-    onSubmit(submitData);
+    setError('');
+    try {
+      const submitData = {
+        ...formData,
+        ordem: Number(formData.ordem)
+      };
+      await onSubmit(submitData);
+    } catch (err) {
+      setError(err.response?.data?.error || 'Erro ao salvar bloco');
+    }
   };
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <FormControl fullWidth required sx={{ minWidth: 200 }}>

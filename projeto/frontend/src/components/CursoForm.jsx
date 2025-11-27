@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Box, Grid, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { TextField, Button, Box, Grid, FormControl, InputLabel, Select, MenuItem, Alert } from '@mui/material';
 
 const CursoForm = ({ data, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -10,6 +10,7 @@ const CursoForm = ({ data, onSubmit, onCancel }) => {
   });
   const [instituicoes, setInstituicoes] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const loadInstituicoes = async () => {
@@ -44,17 +45,27 @@ const CursoForm = ({ data, onSubmit, onCancel }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const submitData = {
-      ...formData,
-      turnos: Array.isArray(formData.turnos) ? formData.turnos : []
-    };
-    onSubmit(submitData);
+    setError('');
+    try {
+      const submitData = {
+        ...formData,
+        turnos: Array.isArray(formData.turnos) ? formData.turnos : []
+      };
+      await onSubmit(submitData);
+    } catch (err) {
+      setError(err.response?.data?.error || 'Erro ao salvar curso');
+    }
   };
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <FormControl fullWidth required>

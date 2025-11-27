@@ -65,27 +65,16 @@ const FormularioAulaPage = () => {
   };
 
   const handleSubmit = async (data) => {
-    setLoading(true);
-    setMessage('');
-
-    try {
-      if (editingItem) {
-        await aulaService.update(editingItem._id, data);
-        setMessage('Aula atualizada com sucesso!');
-      } else {
-        await aulaService.create(data);
-        setMessage('Aula criada com sucesso!');
-      }
-      
-      setModalOpen(false);
-      setEditingItem(null);
-      loadAulas();
-    } catch (error) {
-      const errorMessage = error.response?.data?.error || error.message;
-      setMessage('Erro ao salvar aula: ' + errorMessage);
-    } finally {
-      setLoading(false);
+    if (editingItem) {
+      await aulaService.update(editingItem._id, data);
+    } else {
+      await aulaService.create(data);
     }
+    
+    setModalOpen(false);
+    setEditingItem(null);
+    loadAulas();
+    setMessage('Aula salva com sucesso!');
   };
 
   const handleCreate = () => {
@@ -131,11 +120,12 @@ const FormularioAulaPage = () => {
   };
 
   const columns = [
-    { field: 'semestre', headerName: 'Semestre', width: 120 },
+    { field: 'semestre', headerName: 'Semestre', width: 120, sortable: false },
     { 
       field: 'disciplinaId', 
       headerName: 'Disciplina', 
       width: 150,
+      sortable: false,
       renderCell: (params) => {
         const id = typeof params.row.disciplinaId === 'object' ? params.row.disciplinaId._id : params.row.disciplinaId;
         const disciplina = options.disciplinas.find(d => d._id === id);
@@ -146,6 +136,7 @@ const FormularioAulaPage = () => {
       field: 'professorId', 
       headerName: 'Professor', 
       width: 150,
+      sortable: false,
       renderCell: (params) => {
         const id = typeof params.row.professorId === 'object' ? params.row.professorId._id : params.row.professorId;
         return getProfessorNome(id);
@@ -155,6 +146,7 @@ const FormularioAulaPage = () => {
       field: 'laboratorioId', 
       headerName: 'Laboratório', 
       width: 150,
+      sortable: false,
       renderCell: (params) => {
         const id = typeof params.row.laboratorioId === 'object' ? params.row.laboratorioId._id : params.row.laboratorioId;
         return getLaboratorioNome(id);
@@ -164,16 +156,18 @@ const FormularioAulaPage = () => {
       field: 'cursoId', 
       headerName: 'Curso', 
       width: 150,
+      sortable: false,
       renderCell: (params) => {
         const id = typeof params.row.cursoId === 'object' ? params.row.cursoId._id : params.row.cursoId;
         return getCursoNome(id);
       }
     },
-    { field: 'diaSemana', headerName: 'Dia', width: 120 },
+    { field: 'diaSemana', headerName: 'Dia', width: 120, sortable: false },
     { 
       field: 'blocos', 
       headerName: 'Horário', 
       width: 120,
+      sortable: false,
       renderCell: (params) => {
         const id = typeof params.row.blocos === 'object' ? params.row.blocos._id : params.row.blocos;
         return getBlocoHorario(id);
@@ -183,6 +177,7 @@ const FormularioAulaPage = () => {
       field: 'actions',
       headerName: 'Ações',
       width: 120,
+      sortable: false,
       renderCell: (params) => (
         <Box>
           <IconButton onClick={() => handleEdit(params.row)} size="small">
@@ -205,8 +200,8 @@ const FormularioAulaPage = () => {
         </Button>
       </Box>
 
-      {message && (
-        <Alert severity={message.includes('sucesso') ? 'success' : 'error'} sx={{ mb: 2 }}>
+      {message && message.includes('sucesso') && (
+        <Alert severity="success" sx={{ mb: 2 }}>
           {message}
         </Alert>
       )}
@@ -219,10 +214,12 @@ const FormularioAulaPage = () => {
         disableSelectionOnClick
         loading={optionsLoading}
         hideFooter
+        disableColumnMenu
+        sortingOrder={[]}
         sx={{ mb: 3 }}
       />
 
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} sx={{ zIndex: 1300 }}>
         <Box sx={{
           position: 'absolute',
           top: '50%',
@@ -233,7 +230,8 @@ const FormularioAulaPage = () => {
           boxShadow: 24,
           p: 4,
           maxHeight: '90vh',
-          overflow: 'auto'
+          overflow: 'auto',
+          zIndex: 1301
         }}>
           <Typography variant="h6" gutterBottom>
             {editingItem ? 'Editar Aula' : 'Nova Aula'}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Box, Grid } from '@mui/material';
+import { TextField, Button, Box, Grid, Alert } from '@mui/material';
 
 const InstituicaoForm = ({ data, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -9,6 +9,7 @@ const InstituicaoForm = ({ data, onSubmit, onCancel }) => {
     endereco: '',
     status: ''
   });
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (data) {
@@ -23,13 +24,23 @@ const InstituicaoForm = ({ data, onSubmit, onCancel }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    setError('');
+    try {
+      await onSubmit(formData);
+    } catch (err) {
+      setError(err.response?.data?.error || 'Erro ao salvar instituição');
+    }
   };
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
           <TextField

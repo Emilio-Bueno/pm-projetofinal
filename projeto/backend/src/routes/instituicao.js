@@ -43,6 +43,11 @@ const router = express.Router();
  */
 router.post('/', async (req, res) => {
   try {
+    const { nome } = req.body;
+    const existingInstituicao = await Instituicao.findOne({ nome });
+    if (existingInstituicao) {
+      return res.status(400).json({ error: 'Já existe uma instituição com este nome' });
+    }
     const instituicao = new Instituicao(req.body);
     await instituicao.save();
     res.status(201).json(instituicao);
@@ -100,6 +105,11 @@ router.get('/', async (req, res) => {
  */
 router.put('/:id', async (req, res) => {
   try {
+    const { nome } = req.body;
+    const existingInstituicao = await Instituicao.findOne({ nome, _id: { $ne: req.params.id } });
+    if (existingInstituicao) {
+      return res.status(400).json({ error: 'Já existe uma instituição com este nome' });
+    }
     const instituicao = await Instituicao.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!instituicao) return res.status(404).json({ error: 'Instituição não encontrada' });
     res.json(instituicao);

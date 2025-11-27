@@ -43,6 +43,11 @@ const router = express.Router();
  */
 router.post('/', async (req, res) => {
   try {
+    const { nome } = req.body;
+    const existingCurso = await Curso.findOne({ nome });
+    if (existingCurso) {
+      return res.status(400).json({ error: 'Já existe um curso com este nome' });
+    }
     const curso = new Curso(req.body);
     await curso.save();
     res.status(201).json(curso);
@@ -100,6 +105,11 @@ router.get('/', async (req, res) => {
  */
 router.put('/:id', async (req, res) => {
   try {
+    const { nome } = req.body;
+    const existingCurso = await Curso.findOne({ nome, _id: { $ne: req.params.id } });
+    if (existingCurso) {
+      return res.status(400).json({ error: 'Já existe um curso com este nome' });
+    }
     const curso = await Curso.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!curso) return res.status(404).json({ error: 'Curso não encontrado' });
     res.json(curso);

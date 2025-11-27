@@ -49,17 +49,13 @@ const LaboratoriosPage = () => {
   };
 
   const handleSubmit = async (data) => {
-    try {
-      if (editingItem) {
-        await laboratorioService.update(editingItem._id, data);
-      } else {
-        await laboratorioService.create(data);
-      }
-      setModalOpen(false);
-      loadLaboratorios();
-    } catch (error) {
-      console.error('Erro ao salvar laboratório:', error);
+    if (editingItem) {
+      await laboratorioService.update(editingItem._id, data);
+    } else {
+      await laboratorioService.create(data);
     }
+    setModalOpen(false);
+    loadLaboratorios();
   };
 
   const columns = [

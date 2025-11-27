@@ -66,17 +66,13 @@ const DisciplinasPage = () => {
   };
 
   const handleSubmit = async (data) => {
-    try {
-      if (editingItem) {
-        await disciplinaService.update(editingItem._id, data);
-      } else {
-        await disciplinaService.create(data);
-      }
-      setModalOpen(false);
-      loadDisciplinas();
-    } catch (error) {
-      console.error('Erro ao salvar disciplina:', error);
+    if (editingItem) {
+      await disciplinaService.update(editingItem._id, data);
+    } else {
+      await disciplinaService.create(data);
     }
+    setModalOpen(false);
+    loadDisciplinas();
   };
 
   const columns = [

@@ -1,6 +1,6 @@
 // Imports necessários para o componente
 import React, { useState, useEffect } from 'react';
-import { TextField, Select, MenuItem, FormControl, InputLabel, Button, Grid, Box } from '@mui/material';
+import { TextField, Select, MenuItem, FormControl, InputLabel, Button, Grid, Box, Alert } from '@mui/material';
 import { cursoService } from '../services/cursoService.jsx';
 import { disciplinaService } from '../services/disciplinaService.jsx';
 import { professorService } from '../services/professorService.jsx';
@@ -33,6 +33,7 @@ const AulaForm = ({ data, onSubmit, onCancel, resetForm, onResetComplete }) => {
 
   // Estado de carregamento
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   
   // Dias da semana disponíveis (excluindo domingo)
   const diasSemana = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
@@ -144,14 +145,24 @@ const AulaForm = ({ data, onSubmit, onCancel, resetForm, onResetComplete }) => {
   };
 
   // Submete o formulário
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    setError('');
+    try {
+      await onSubmit(formData);
+    } catch (err) {
+      setError(err.response?.data?.error || 'Erro ao salvar aula');
+    }
   };
 
   // Renderização do formulário
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
       {/* Grid container para organizar campos */}
       <Grid container spacing={3}>
         {/* Campos de informações básicas */}

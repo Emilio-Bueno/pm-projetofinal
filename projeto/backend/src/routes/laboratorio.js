@@ -41,11 +41,16 @@ const router = express.Router();
  */
 router.post('/', async (req, res) => {
   try {
+    const { nome } = req.body;
+    const existingLaboratorio = await Laboratorio.findOne({ nome });
+    if (existingLaboratorio) {
+      return res.status(400).json({ error: 'Já existe um laboratório com este nome' });
+    }
     const laboratorio = new Laboratorio(req.body);
     await laboratorio.save();
     res.status(201).json(laboratorio);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ error: 'Erro ao salvar laboratório. Verifique os dados informados.' });
   }
 });
 
@@ -98,11 +103,16 @@ router.get('/', async (req, res) => {
  */
 router.put('/:id', async (req, res) => {
   try {
+    const { nome } = req.body;
+    const existingLaboratorio = await Laboratorio.findOne({ nome, _id: { $ne: req.params.id } });
+    if (existingLaboratorio) {
+      return res.status(400).json({ error: 'Já existe um laboratório com este nome' });
+    }
     const laboratorio = await Laboratorio.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!laboratorio) return res.status(404).json({ error: 'Laboratório não encontrado' });
     res.json(laboratorio);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ error: 'Erro ao atualizar laboratório. Verifique os dados informados.' });
   }
 });
 

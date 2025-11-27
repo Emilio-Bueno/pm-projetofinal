@@ -49,17 +49,13 @@ const InstituicoesPage = () => {
   };
 
   const handleSubmit = async (data) => {
-    try {
-      if (editingItem) {
-        await instituicaoService.update(editingItem._id, data);
-      } else {
-        await instituicaoService.create(data);
-      }
-      setModalOpen(false);
-      loadInstituicoes();
-    } catch (error) {
-      console.error('Erro ao salvar instituição:', error);
+    if (editingItem) {
+      await instituicaoService.update(editingItem._id, data);
+    } else {
+      await instituicaoService.create(data);
     }
+    setModalOpen(false);
+    loadInstituicoes();
   };
 
   const columns = [

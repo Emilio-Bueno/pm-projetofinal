@@ -49,17 +49,13 @@ const ProfessoresPage = () => {
   };
 
   const handleSubmit = async (data) => {
-    try {
-      if (editingItem) {
-        await professorService.update(editingItem._id, data);
-      } else {
-        await professorService.create(data);
-      }
-      setModalOpen(false);
-      loadProfessores();
-    } catch (error) {
-      console.error('Erro ao salvar professor:', error);
+    if (editingItem) {
+      await professorService.update(editingItem._id, data);
+    } else {
+      await professorService.create(data);
     }
+    setModalOpen(false);
+    loadProfessores();
   };
 
   const columns = [

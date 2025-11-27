@@ -52,17 +52,13 @@ const CursosPage = () => {
   };
 
   const handleSubmit = async (data) => {
-    try {
-      if (editingItem) {
-        await cursoService.update(editingItem._id, data);
-      } else {
-        await cursoService.create(data);
-      }
-      setModalOpen(false);
-      loadCursos();
-    } catch (error) {
-      console.error('Erro ao salvar curso:', error);
+    if (editingItem) {
+      await cursoService.update(editingItem._id, data);
+    } else {
+      await cursoService.create(data);
     }
+    setModalOpen(false);
+    loadCursos();
   };
 
   const columns = [

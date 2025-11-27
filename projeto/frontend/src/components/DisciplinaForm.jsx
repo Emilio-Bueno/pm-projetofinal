@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Box, Grid, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { TextField, Button, Box, Grid, FormControl, InputLabel, Select, MenuItem, Alert } from '@mui/material';
 import { cursoService } from '../services/cursoService';
 import { professorService } from '../services/professorService';
 
@@ -14,6 +14,7 @@ const DisciplinaForm = ({ data, onSubmit, onCancel }) => {
   const [cursos, setCursos] = useState([]);
   const [professores, setProfessores] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const loadData = async () => {
@@ -65,25 +66,35 @@ const DisciplinaForm = ({ data, onSubmit, onCancel }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const submitData = {
-      ...formData,
-      cargaHoraria: Number(formData.cargaHoraria),
-      // Remover professorId se estiver vazio
-      professorId: formData.professorId || undefined
-    };
-    // Remover campos undefined
-    Object.keys(submitData).forEach(key => {
-      if (submitData[key] === undefined) {
-        delete submitData[key];
-      }
-    });
-    onSubmit(submitData);
+    setError('');
+    try {
+      const submitData = {
+        ...formData,
+        cargaHoraria: Number(formData.cargaHoraria),
+        // Remover professorId se estiver vazio
+        professorId: formData.professorId || undefined
+      };
+      // Remover campos undefined
+      Object.keys(submitData).forEach(key => {
+        if (submitData[key] === undefined) {
+          delete submitData[key];
+        }
+      });
+      await onSubmit(submitData);
+    } catch (err) {
+      setError(err.response?.data?.error || 'Erro ao salvar disciplina');
+    }
   };
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth required>
